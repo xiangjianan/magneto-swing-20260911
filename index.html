@@ -24,6 +24,7 @@ function resize() {
   DPR = Math.min(2, window.devicePixelRatio || 1);
   W = innerWidth; H = innerHeight;
   cv.width = W * DPR; cv.height = H * DPR;
+  cv.style.width = W + 'px'; cv.style.height = H + 'px';   // 画布逻辑尺寸须锁回视口，否则按 W*DPR 像素显示会被放大裁切
   S = H / 800; VW = W / S;
 }
 addEventListener('resize', resize); resize();
@@ -429,6 +430,8 @@ function roundRect(x, y, w, h, r) {
   ctx.closePath();
 }
 function drawHUD() {
+  ctx.save();
+  ctx.translate(-camX, 0);            // HUD 坐标按相机窗口书写，先平移回屏幕空间，否则随相机漂移出屏
   ctx.textAlign = 'center';
   if (mode !== 'menu') {
     ctx.fillStyle = '#e8f4ff'; ctx.font = 'bold 46px system-ui,sans-serif';
@@ -470,7 +473,7 @@ function drawHUD() {
   if (mode === 'dead' && deadInfo) {
     ctx.fillStyle = 'rgba(5,8,18,0.66)'; ctx.fillRect(camX, 0, VW, 800);
     const cx = camX + VW / 2, cw = Math.min(420, VW - 60), chh = 330;
-    const cxx = cx - cw / 2, cyy = 235;
+    const cxx = cx - cw / 2, cyy = (800 - chh) / 2;   // 卡片纵向居中于 800 设计高
     ctx.fillStyle = 'rgba(18,26,48,0.96)';
     roundRect(cxx, cyy, cw, chh, 18); ctx.fill();
     ctx.strokeStyle = 'rgba(87,230,255,0.35)'; ctx.lineWidth = 2; ctx.stroke();
@@ -496,6 +499,7 @@ function drawHUD() {
     ctx.font = 'bold 22px system-ui,sans-serif';
     ctx.fillText('点按任意处 · 立刻再荡', cx, cyy + 288);
   }
+  ctx.restore();
 }
 function render() {
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);

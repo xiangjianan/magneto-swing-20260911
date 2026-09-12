@@ -1,4 +1,4 @@
-# 磁索 MAGNETO
+# MAGNETO
 
 **English** | [简体中文](README.zh-CN.md)
 
